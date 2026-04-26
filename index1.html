@@ -1,0 +1,704 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>For Someone Special ❤️</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://api.fontshare.com/v2/css?f[]=satoshi@700,500,400&f[]=playfair-display@700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg-color: #0c0a09;
+        --primary-color: #f43f5e;
+        --secondary-color: #ec4899;
+        --accent-glow: rgba(236, 72, 153, 0.5);
+      }
+
+      body {
+        font-family: "Satoshi", sans-serif;
+        background-color: var(--bg-color);
+        color: #f9fafb;
+        overflow: scroll;
+        touch-action: manipulation;
+      }
+
+      #aurora-background {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+        opacity: 0.6;
+        background:
+          radial-gradient(
+            at 20% 20%,
+            hsla(333, 70%, 55%, 0.4) 0px,
+            transparent 50%
+          ),
+          radial-gradient(
+            at 80% 20%,
+            hsla(282, 82%, 54%, 0.3) 0px,
+            transparent 50%
+          ),
+          radial-gradient(
+            at 20% 80%,
+            hsla(210, 89%, 60%, 0.3) 0px,
+            transparent 50%
+          ),
+          radial-gradient(
+            at 80% 80%,
+            hsla(35, 90%, 60%, 0.3) 0px,
+            transparent 50%
+          );
+        animation: aurora-flow 20s infinite linear;
+      }
+
+      @keyframes aurora-flow {
+        0% {
+          transform: rotate(0deg) scale(1.2);
+        }
+        50% {
+          transform: rotate(180deg) scale(1.3);
+        }
+        100% {
+          transform: rotate(360deg) scale(1.2);
+        }
+      }
+
+      #app {
+        /* MODERN CENTERING FIX: Use Grid to center the main content container */
+        display: grid;
+        place-items: center;
+        height: 100vh;
+        padding: 1rem;
+        position: relative;
+        z-index: 2;
+      }
+
+      #step-container {
+        width: 100%;
+        height: 100%;
+        max-width: 800px; /* Max width of the largest step */
+        max-height: 600px; /* Give a max-height for stability */
+        position: relative;
+      }
+
+      .step {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 100%;
+        background: rgba(26, 26, 26, 0.5);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.95);
+        transition:
+          opacity 0.6s ease-out,
+          transform 0.6s ease-out;
+        pointer-events: none;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      }
+
+      .step.active {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+        pointer-events: all;
+      }
+
+      .step .anim-child {
+        opacity: 0;
+        transform: translateY(25px);
+      }
+
+      .btn {
+        font-weight: 700;
+        background-image: linear-gradient(
+          90deg,
+          var(--secondary-color),
+          var(--primary-color)
+        );
+        transition:
+          transform 0.3s ease,
+          box-shadow 0.3s ease;
+        will-change: transform;
+        box-shadow: 0 0 20px rgba(236, 72, 153, 0.3);
+      }
+      .btn:hover {
+        transform: translateY(-5px) scale(1.05);
+        box-shadow: 0 0 35px var(--accent-glow);
+      }
+      .btn:active {
+        transform: translateY(-1px) scale(1);
+      }
+
+      .text-gradient {
+        font-family: "Playfair Display", serif;
+        background: linear-gradient(90deg, #f9a8d4, #f472b6, #fff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      @keyframes heartbeat {
+        0%,
+        100% {
+          transform: scale(1);
+          filter: drop-shadow(0 0 10px var(--accent-glow));
+        }
+        50% {
+          transform: scale(1.2);
+          filter: drop-shadow(0 0 25px var(--accent-glow));
+        }
+      }
+      .heart-beat {
+        animation: heartbeat 1.5s ease-in-out infinite;
+      }
+
+      .bento-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(2, 1fr);
+        gap: 1.5rem;
+      }
+      .bento-item {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
+      }
+      .bento-item:hover {
+        transform: translateY(-8px);
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.2);
+      }
+      .bento-item-1 {
+        grid-column: span 2;
+      }
+      .bento-item-3 {
+        grid-column: span 2;
+      }
+      @media (max-width: 768px) {
+        .bento-grid {
+          grid-template-columns: 1fr;
+        }
+        .bento-item-1,
+        .bento-item-3 {
+          grid-column: span 1;
+        }
+      }
+
+      #progress-bar {
+        background-image: linear-gradient(
+          90deg,
+          var(--secondary-color),
+          var(--primary-color)
+        );
+        transition: width 0.5s ease-out;
+      }
+
+      #polaroid {
+        perspective: 1000px;
+      }
+      #polaroid-inner {
+        transform: rotateY(-5deg) rotateX(3deg);
+        transition: transform 0.5s ease;
+      }
+      #polaroid:hover #polaroid-inner {
+        transform: rotateY(0) rotateX(0) scale(1.05);
+      }
+
+      .final-wish-text {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+    </style>
+    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+  </head>
+  <body>
+    <div id="aurora-background"></div>
+    <div
+      id="canvas-container"
+      style="position: fixed; top: 0; left: 0; z-index: 1"
+    ></div>
+
+    <div id="app">
+      <div
+        class="fixed top-5 left-1/2 -translate-x-1/2 w-4/5 max-w-sm h-1 bg-white/10 rounded-full z-20 backdrop-blur-sm"
+      >
+        <div id="progress-bar" class="h-full w-0 rounded-full"></div>
+      </div>
+
+      <!-- This container is now centered by the #app grid -->
+      <main id="step-container">
+        <div id="step1" class="step max-w-lg p-8 rounded-2xl text-center">
+          <div class="anim-child text-7xl mb-6 heart-beat">❤️</div>
+          <h1
+            class="anim-child text-4xl md:text-5x1 font-bold text-gradient mb-4"
+          >
+            Hey Ankita,
+          </h1>
+          <p class="anim-child text-gray-300 mb-8 text-lg">
+            অঙ্কিতা আজ একটি খুবই স্পেশাল দিন আমাদের কাছে ।। এই দিনের জন্য আমরা
+            দুজনেই প্রতিটা মুহূর্ত অপেক্ষা করি ।। তাই এই দিনটিকে আরও স্পেশাল করে
+            তোলার জন্য এবং তোমার মুখে হাঁসি ফুটাতে আমি একটা তোমার জন্য ছোট্ট জগৎ
+            তৈরি করেছি ।।💖
+          </p>
+          <button
+            id="start-btn"
+            class="anim-child btn text-white py-3 px-10 rounded-full"
+          >
+            Let's Begin
+          </button>
+        </div>
+
+        <div id="step2" class="step max-w-xl p-8 rounded-2xl text-center">
+          <div class="anim-child text-7xl mb-4">🎉</div>
+          <h2
+            class="anim-child text-4xl md:text-5xl font-bold text-gradient mb-4"
+          >
+            Happy Birthday, My love - and Happy 3rd Year of Our Love !
+          </h2>
+          <p class="anim-child text-gray-300 mb-8 text-lg">
+            আজ তুমি 2০ বছরে পা দিলে এবং আমাদের ভালোবাসা 3 বছর সম্পূর্ণ হলো ।।
+            সত্যি দেখতে দেখতে কেমন 3 বছর কেটে গেল বুজতেও পারলাম না ।। আশা করি এই
+            ভাবেই যেন বাকি জীবনটা তোমার সাথেই আনন্দ, ভালোবাসা, রাগ, ঝগড়া,
+            খুনসুঁটি এর মধ্যে দিয়ে কেটে যায় ।। সত্যিই অঙ্কিতা আমি তোমায় আমার
+            জীবনে পেয়ে খুব খুশি ।।
+          </p>
+          <button
+            id="next-btn-2"
+            class="anim-child btn text-white py-3 px-10 rounded-full"
+          >
+            There's more...
+          </button>
+        </div>
+
+        <div
+          id="step3"
+          class="step max-w-4xl p-6 md:p-8 rounded-2xl text-center"
+          style="width: 1500px; height: 1200px; margin: 239px 0 33px 47px"
+        >
+          <h2
+            class="anim-child text-2xl md:text-3xl font-bold text-gradient mt-14 mb-1"
+            style="margin: 40px 0"
+          >
+            কিছু ভুলতে না পারা মুহূর্ত 💖
+          </h2>
+          <div class="bento-grid">
+            <div class="anim-child bento-item bento-item-1 p-6 rounded-xl">
+              <h3 class="text-2xl font-bold text-pink-300 mb-2">
+                ✨ 02.05.2023
+              </h3>
+              <p class="text-gray-300">
+                এটি হলো আমাদের ভালোবাসার দ্বিতীয় দিন। এই দিনটির কথা হয়তো ঠিক
+                করে বর্ণনা করতে পারব না। এই দিন আমাদের একে অপরের চোখের দিকে
+                তাকানোর ক্ষমতা ছিল না। সেই দিন আমি বার বার তোমার চোখের দিকে
+                তাকানোর চেষ্টা করছিলাম কিন্তু ব্যর্থ হচ্ছিলাম কারণ আমি যাকে
+                গোপনে ভালোবাসে এসেছি তাকে নিজের করে পাওয়ার পর খুব আনন্দ এবং
+                লজ্জা লাগছিল। সত্যিই এই দিন আমি প্রথম দিনের থেকেও বেশি খুশি
+                ছিলাম কারণ নিজের ভালোবাসাকে এতটা কাছের থাকে দেখতে পারছি বলে। 😌
+              </p>
+            </div>
+            <div class="anim-child bento-item p-6 rounded-xl">
+              <h3 class="text-2xl font-bold text-pink-300 mb-2">
+                ✨ 15.05.2023
+              </h3>
+              <p class="text-gray-300">
+                এই দিনটির কথা লিখে বা বলে প্রকাশ করা সম্ভব নয়। যত বলব ততই কম
+                হবে। এই দিন পড়ে বেরোনোর পর একটা ফাঁকা জায়গায় আমরা দুজনে যায়,
+                সেখানে প্রথমে একে অপরের এঁটো করা চকলেট খাই। সত্যিই সেই দিন যেন
+                চকলেটের স্বাদ আরও বেড়ে গেছিল। তারপর আমি অঙ্কিতাকে প্রথমবার আমার
+                বুকের মাঝে জড়িয়ে ধরি এবং ওর নরম ঠোঁটের উপর চকলেট লাগিয়ে আমি
+                খাই। এইভাবেই আমাদের প্রথম Hug 🫂 এবং কিস করা। 🙈❤️
+              </p>
+            </div>
+
+            <div class="anim-child bento-item bento-item-3 p-6 rounded-xl">
+              <h3 class="text-2xl font-bold text-pink-300 mb-2">
+                ✨ 28.06.2024
+              </h3>
+              <p class="text-gray-300">
+                অঙ্কিতা Sorry আমি এই দিনের কথা মনে করিয়ে তোমায় আজ কষ্ট দিতে
+                চাই না কিন্তু সত্যিই এই দিনটা আমি ভুলতে পারব না শুধু আমার
+                Accident এর জন্য না, এই দিন আমি বুঝেছিলাম আমার জীবনে তোমার
+                মূল্যটা। সেই দিন জানি না আমার কি মনে হয়েছিল, আমি আমার পায়ের
+                ব্যথা বা আমার ভবিষ্যৎ নিয়ে ভাবছিলাম না। শুধু মনে হচ্ছিল যে আমার
+                যদি কিছু হয়ে যায় আমার অঙ্কিতা কীভাবে থাকবে। ক্ষমা করে দিস
+                ক্ষেপু আমায়, ওই সব কথা গুলো ওই পরিস্থিতি ভাবিয়েছিল, আমি সত্যিই
+                ওই কথা গুলো বলে তোর কষ্ট বাড়াতে চাইনি। কিন্তু জানিস আমি এর
+                মধ্যে একটা ভালোবাসা খুঁজে পাই, যে এত কিছুর পরও আমার ওই অবস্থায়
+                তোর কথা মাথায় এসেছিল। আমার তোকে বলা সব I Love You এর থেকে ওই
+                দিন I Love You message এর মধ্যে ভালোবাসা টা সবকিছুর থেকে বেশি
+                ছিল। তোকে মন থেকে ভালবেসেছিলাম বলেই সেই দিন ওই I Love You ta মন
+                থেকে বেরিয়ে এসে ছিল।
+              </p>
+            </div>
+            <div class="anim-child bento-item p-6 rounded-xl">
+              <h3 class="text-2xl font-bold text-pink-300 mb-2">
+                ✨ Every day
+              </h3>
+              <p class="text-gray-300">
+                এটি এমন একটি দিন যেখানে আমাদের মধ্যে প্রতিটা মুহূর্তে কিছু না
+                কিছু স্মৃতি তৈরি হচ্ছে সেটা ভালো হোক বা খারাপ। আমি প্রতিটা
+                মুহূর্তে তোমায় হাসানোর, খুশি করার এবং ভালো রাখার চেষ্টা করি।
+                তোমার মুখের মিষ্টি হাঁসি আমায় আবার নতুন করে তোমার প্রেমে ফেলে
+                দেয় 🫠।
+              </p>
+            </div>
+          </div>
+          <button
+            id="next-btn-3"
+            class="anim-child btn text-white py-3 px-10 rounded-full mt-8"
+          >
+            Next
+          </button>
+        </div>
+
+        <div
+          id="step4"
+          class="step max-w-lg p-8 rounded-2xl text-center"
+          style="margin-top: 164px"
+        >
+          <h2
+            class="anim-child text-4xl md:text-5xl font-bold text-gradient mb-6"
+          >
+            A Special Memory
+          </h2>
+          <div id="polaroid" class="anim-child mb-6" style="margin-top: 29px">
+            <div
+              id="polaroid-inner"
+              class="bg-white p-4 pb-8 rounded-lg shadow-2xl"
+              style="height: 631px"
+            >
+              <img
+                src="whatsApp Image.jpeg"
+                alt="A special memory"
+                class="w-full h-90 object-cover"
+              />
+              <p
+                class="text-center text-gray-800 font-semibold mt-4 text-lg italic"
+              >
+                Ankita ❤️ Rohit
+              </p>
+            </div>
+          </div>
+          <p class="anim-child text-gray-300 mb-8 text-lg">
+            আমার সমস্ত ক্লান্তির পর শান্তির জায়গা ।।
+          </p>
+          <button
+            id="next-btn-4"
+            class="anim-child btn text-white py-3 px-10 rounded-full"
+          >
+            One last thing...
+          </button>
+        </div>
+
+        <div id="step5" class="step max-w-lg p-8 rounded-2xl text-center">
+          <div class="anim-child text-7xl mb-4">🎂</div>
+          <h2
+            class="anim-child text-4xl md:text-5xl font-bold text-gradient mb-4"
+          >
+            My Wish For You
+          </h2>
+          <p class="anim-child text-gray-300 mb-8 text-lg">
+            অঙ্কিতা আজ এই শুভ দিনে তোমায় আমার তরফ থেকে অনেক অনেক ভালোবাসা ও
+            শুভেচ্ছা আগামী দিনের জন্য। আমাদের ভালোবাসার যত দিন এগোবে তত কঠিন
+            হয়ে উঠবে কিন্তু আমাদের একে অপরের হাত ছাড়লে হবে না। আমাদের এই ভাবেই
+            একসাথে হাত ধরে বড়ো হয়ে উঠতে হবে। তুমি তোমার যেকোনো পরিস্থিতিতে
+            তোমার রোহিতকে খুব কাছে পাবে। তোমায় আশীর্বাদ করি অনেক বড়ো হও,
+            পড়াশুনায় অনেক দূর এগিয়ে যাও ও Dr. Ankita Banerjee হয়ে ওঠো। এবং
+            সারাজীবন আমার হয়ে থেকো প্রিয়।
+          </p>
+          <div class="h-20 flex items-center justify-center">
+            <p
+              id="final-wish"
+              class="final-wish-text font-bold text-xl text-pink-300"
+            >
+              আমি তোমায় খুব ভালোবাসি প্রিয় !!❤️
+              <br />
+              <br />
+              ইতি
+              <br />
+              তোমার ভালোবাসা
+            </p>
+          </div>
+          <button
+            id="confetti-btn"
+            class="anim-child btn text-white py-3 px-10 rounded-full"
+          >
+            Celebrate!
+          </button>
+          <footer class="anim-child mt-12 text-gray-500 text-sm"></footer>
+        </div>
+      </main>
+    </div>
+
+    <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        let scene,
+          camera,
+          renderer,
+          hearts = [];
+        const canvasContainer = document.getElementById("canvas-container");
+
+        function initThreeJS() {
+          scene = new THREE.Scene();
+          camera = new THREE.PerspectiveCamera(
+            75,
+            window.innerWidth / window.innerHeight,
+            0.1,
+            1000,
+          );
+          camera.position.z = 30;
+
+          renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+          renderer.setSize(window.innerWidth, window.innerHeight);
+          renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+          canvasContainer.appendChild(renderer.domElement);
+
+          const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+          scene.add(ambientLight);
+          const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
+          directionalLight.position.set(5, 10, 7);
+          scene.add(directionalLight);
+
+          const heartShape = new THREE.Shape();
+          heartShape.moveTo(25, 25);
+          heartShape.bezierCurveTo(25, 25, 20, 0, 0, 0);
+          heartShape.bezierCurveTo(-30, 0, -30, 35, -30, 35);
+          heartShape.bezierCurveTo(-30, 55, -10, 77, 25, 95);
+          heartShape.bezierCurveTo(60, 77, 80, 55, 80, 35);
+          heartShape.bezierCurveTo(80, 35, 80, 0, 50, 0);
+          heartShape.bezierCurveTo(35, 0, 25, 25, 25, 25);
+          const extrudeSettings = {
+            depth: 8,
+            bevelEnabled: true,
+            bevelSegments: 2,
+            steps: 2,
+            bevelSize: 1,
+            bevelThickness: 1,
+          };
+          const geometry = new THREE.ExtrudeGeometry(
+            heartShape,
+            extrudeSettings,
+          );
+          const colors = [0xfc94af, 0xff7892, 0xf75373, 0xec4899];
+
+          for (let i = 0; i < 20; i++) {
+            const material = new THREE.MeshPhongMaterial({
+              color: colors[Math.floor(Math.random() * colors.length)],
+              emissive: 0x111111,
+              shininess: 100,
+              specular: 0xffffff,
+              transparent: true,
+              opacity: 0.7,
+            });
+            const heart = new THREE.Mesh(geometry, material);
+            const scale = Math.random() * 0.04 + 0.02;
+            heart.scale.set(scale, scale, scale);
+            heart.position.set(
+              (Math.random() - 0.5) * 60,
+              (Math.random() - 0.5) * 60,
+              (Math.random() - 0.5) * 20,
+            );
+            heart.rotation.set(
+              Math.random() * Math.PI,
+              Math.random() * Math.PI,
+              Math.random() * Math.PI,
+            );
+            heart.userData = {
+              originalY: heart.position.y,
+              rotationSpeedX: (Math.random() - 0.5) * 0.01,
+              rotationSpeedY: (Math.random() - 0.5) * 0.01,
+              floatDistance: Math.random() * 2 + 1,
+            };
+            hearts.push(heart);
+            scene.add(heart);
+          }
+          animate();
+        }
+
+        function animate() {
+          requestAnimationFrame(animate);
+          const time = Date.now() * 0.0005;
+          hearts.forEach((heart) => {
+            if (heart.material.opacity > 0) {
+              heart.rotation.x += heart.userData.rotationSpeedX;
+              heart.rotation.y += heart.userData.rotationSpeedY;
+              heart.position.y =
+                heart.userData.originalY +
+                Math.sin(time + heart.position.x) *
+                  heart.userData.floatDistance;
+            }
+          });
+          renderer.render(scene, camera);
+        }
+
+        window.addEventListener(
+          "resize",
+          () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+          },
+          false,
+        );
+
+        const totalSteps = 5;
+        let currentStep = 1;
+        const progressBar = document.getElementById("progress-bar");
+        const steps = document.querySelectorAll(".step");
+        const confettiBtn = document.getElementById("confetti-btn");
+
+        function updateProgressBar() {
+          const progress = ((currentStep - 1) / (totalSteps - 1)) * 100;
+          gsap.to(progressBar, {
+            width: `${progress}%`,
+            duration: 0.6,
+            ease: "power2.out",
+          });
+        }
+
+        function showStep(stepNumber) {
+          steps.forEach((step) => step.classList.remove("active"));
+          const nextStep = document.getElementById(`step${stepNumber}`);
+          if (nextStep) {
+            nextStep.classList.add("active");
+            gsap.fromTo(
+              nextStep.querySelectorAll(".anim-child"),
+              { opacity: 0, y: 30 },
+              {
+                opacity: 1,
+                y: 0,
+                duration: 0.7,
+                ease: "power2.out",
+                stagger: 0.15,
+                delay: 0.4,
+              },
+            );
+          }
+          updateProgressBar();
+        }
+
+        function createNavListener(buttonId, action) {
+          document.getElementById(buttonId).addEventListener("click", action);
+        }
+        createNavListener("start-btn", () => {
+          currentStep++;
+          showStep(currentStep);
+        });
+        createNavListener("next-btn-2", () => {
+          currentStep++;
+          showStep(currentStep);
+        });
+        createNavListener("next-btn-3", () => {
+          currentStep++;
+          showStep(currentStep);
+        });
+        createNavListener("next-btn-4", () => {
+          currentStep++;
+          showStep(currentStep);
+        });
+
+        confettiBtn.addEventListener("click", () => {
+          confettiBtn.style.pointerEvents = "none";
+          gsap.to(confettiBtn, { opacity: 0, duration: 0.5 });
+          gsap.to("#final-wish", {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            ease: "power2.out",
+            delay: 0.3,
+          });
+
+          const duration = 5 * 1000;
+          const animationEnd = Date.now() + duration;
+          const defaults = {
+            startVelocity: 30,
+            spread: 360,
+            ticks: 60,
+            zIndex: 100,
+          };
+          const colors = [
+            "#ec4899",
+            "#f9a8d4",
+            "#f43f5e",
+            "#ffffff",
+            "#e879f9",
+          ];
+
+          function randomInRange(min, max) {
+            return Math.random() * (max - min) + min;
+          }
+
+          const interval = setInterval(() => {
+            const timeLeft = animationEnd - Date.now();
+            if (timeLeft <= 0) return clearInterval(interval);
+
+            const particleCount = 50 * (timeLeft / duration);
+            confetti(
+              Object.assign({}, defaults, {
+                particleCount,
+                origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+                colors: colors,
+              }),
+            );
+            confetti(
+              Object.assign({}, defaults, {
+                particleCount,
+                origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+                colors: colors,
+              }),
+            );
+          }, 250);
+
+          setTimeout(() => {
+            confetti({
+              particleCount: 20,
+              origin: { y: 0.7 },
+              emojis: ["❤️", "💖", "✨"],
+              scalar: 3,
+            });
+          }, 500);
+
+          hearts.forEach((heart) => {
+            gsap.to(heart.position, {
+              x: (Math.random() - 0.5) * 80,
+              y: heart.position.y + 70 + Math.random() * 20,
+              z: (Math.random() - 0.5) * 40,
+              duration: 4,
+              ease: "power3.out",
+            });
+            gsap.to(heart.rotation, {
+              x: Math.random() * Math.PI * 4,
+              y: Math.random() * Math.PI * 4,
+              duration: 5,
+              ease: "power3.out",
+            });
+            gsap.to(heart.material, {
+              opacity: 0,
+              duration: 4,
+              delay: 0.5,
+              ease: "power2.in",
+            });
+          });
+        });
+
+        initThreeJS();
+        updateProgressBar();
+        showStep(1);
+      });
+    </script>
+  </body>
+</html>
